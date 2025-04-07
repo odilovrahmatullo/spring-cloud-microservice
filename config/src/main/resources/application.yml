@@ -1,0 +1,14 @@
+server:
+  port: 8888
+spring:
+  cloud:
+    config:
+      server:
+        composite:
+          - type: native
+            search-locations: classpath:/shared
+  profiles:
+    active: composite
+  security:
+    user:
+      password: mf12345678

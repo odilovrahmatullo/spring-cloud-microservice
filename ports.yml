@@ -1,0 +1,7 @@
+config: 8888
+discovery: 8761
+gateway: 8080
+user: 8280
+course: 8281
+security: 8282
+payment: 8283

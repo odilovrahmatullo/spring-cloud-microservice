@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: course
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true
+      password: mf12345678
+      username: user
+#  profiles:
+#    active: dev
+
+jwt:
+  key: "veryLongSecretmazgillattayevlasharaaxmojonjinnijonsurbetbekkiydirhonuxlatdibekloxovdangasabekochkozjonduxovmashaynikmaydagapchishularnioqiganbolsangizgapyoqaniqsizmazgi"

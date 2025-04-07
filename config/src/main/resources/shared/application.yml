@@ -1,0 +1,8 @@
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    serviceUrl:
+#      defaultZone: http://new-api.openbudget.local/eureka
+#hash:
+#  salt: xxx
