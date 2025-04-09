@@ -1,6 +1,9 @@
 package davrbank.user
 
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import feign.Response
+import feign.codec.ErrorDecoder
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,6 +23,19 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
+
+@Component
+class FeignErrorDecoder : ErrorDecoder {
+    val mapper = ObjectMapper()
+    override fun decode(methodKey: String?, response: Response?): java.lang.Exception {
+        response?.apply {
+            val message = (mapper.readValue(this.body().asInputStream(), BaseMessage::class.java))
+            return FeignErrorException(message.code, message.message)
+        }
+        return GeneralApiException("Not handled")
+    }
+}
 
 @Configuration
 class WebMvcConfig : WebMvcConfigurer {

@@ -87,13 +87,13 @@ class ExceptionHandler(
 
 sealed class UserServiceException(message: String? = null) : RuntimeException(message) {
     abstract fun errorType(): ErrorCode
-    protected open fun getErrorMessageArguments(): Array<Any?>? = null
-    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource): BaseMessage {
+
+    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource, vararg array: Any?): BaseMessage {
         return BaseMessage(
             errorType().code,
             errorMessageSource.getMessage(
                 errorType().toString(),
-                getErrorMessageArguments(),
+                array,
                 LocaleContextHolder.getLocale()
             )
         )
@@ -111,3 +111,11 @@ class UserNotFoundException : UserServiceException() {
     override fun errorType() = ErrorCode.USER_NOT_FOUND
 }
 
+
+class GeneralApiException(val msg: String) : UserServiceException() {
+    override fun errorType(): ErrorCode = ErrorCode.GENERAL_API_EXCEPTION
+}
+
+class FeignErrorException(val code: Int?, val errorMessage: String?) : UserServiceException() {
+    override fun errorType() = ErrorCode.GENERAL_API_EXCEPTION
+}

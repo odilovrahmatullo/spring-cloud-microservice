@@ -1,12 +1,41 @@
 package davrbank.user
 
+import org.springframework.context.support.ResourceBundleMessageSource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.ExceptionHandler
 import java.math.BigDecimal
 import javax.validation.Valid
 
+
+@ControllerAdvice
+class ExceptionHandlers(
+    private val errorMessageSource: ResourceBundleMessageSource
+) {
+    @ExceptionHandler(UserServiceException::class)
+    fun handleException(exception: UserServiceException): ResponseEntity<*> {
+        return when (exception) {
+            is FeignErrorException -> ResponseEntity.badRequest().body(
+                BaseMessage(exception.code, exception.errorMessage)
+            )
+
+            is GeneralApiException -> ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource, exception.msg)
+            )
+
+            is UserNotFoundException -> ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
+
+            is UsernameAlreadyExistException -> ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
+        }
+    }
+}
 
 @RestController
 class UserController(private val userService: UserService) {

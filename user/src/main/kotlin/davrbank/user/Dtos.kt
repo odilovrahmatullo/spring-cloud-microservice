@@ -9,8 +9,8 @@ import javax.validation.constraints.PositiveOrZero
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class BaseMessage(
-    val code: Int,
-    val message: String,
+    val code: Int?,
+    val message: String?,
     val fields: MutableList<ValidationFieldError>? = null
 )
 
