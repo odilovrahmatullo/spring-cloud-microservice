@@ -141,6 +141,11 @@ class PaymentServiceImpl(
 
     override fun filter(page: Int, size: Int, filterDto: PaymentFilterDto): PageImpl<PaymentResponse> {
         filterDto.run {
+
+            if (fromDate != null && toDate != null) {
+                if (fromDate.isAfter(toDate)) throw InvalidDateException()
+            }
+
             val condition: StringBuilder = StringBuilder()
             val params: MutableMap<String, Any> = mutableMapOf()
 
@@ -151,7 +156,6 @@ class PaymentServiceImpl(
                 params.put("from", fromDateConverted)
             }
 
-
             toDate?.let {
                 val toDateTime: LocalDateTime = LocalDateTime.of(toDate, LocalTime.MAX)
                 val toDateConverted: Date = Date.from(toDateTime.atZone(ZoneId.systemDefault()).toInstant())
@@ -161,7 +165,8 @@ class PaymentServiceImpl(
 
             val selectBuilder: StringBuilder = StringBuilder("From Payment as p where p.deleted = false ")
             selectBuilder.append(condition)
-            val countBuilder: StringBuilder = StringBuilder("Select count(*) from Payment as p where p.deleted = false ")
+            val countBuilder: StringBuilder =
+                StringBuilder("Select count(*) from Payment as p where p.deleted = false ")
             countBuilder.append(condition)
 
             val selectQuery = entityManager.createQuery(selectBuilder.toString(), Payment::class.java)

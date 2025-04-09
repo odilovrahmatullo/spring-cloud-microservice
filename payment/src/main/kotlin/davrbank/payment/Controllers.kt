@@ -52,6 +52,10 @@ class ExceptionHandlers(
             is PaymentNotFoundException -> ResponseEntity.badRequest().body(
                 exception.getErrorMessage(errorMessageSource)
             )
+
+            is InvalidDateException ->  ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
         }
     }
 }

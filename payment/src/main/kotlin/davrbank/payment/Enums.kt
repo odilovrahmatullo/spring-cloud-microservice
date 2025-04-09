@@ -13,7 +13,8 @@ enum class ErrorCode(val code: Int) {
     PAYMENT_EXIST(507),
     FORBIDDEN_ERROR(508),
     LESS_MONEY(509),
-    INVALID_DATE_FORMAT(510)
+    INVALID_DATE_FORMAT(510),
+    INVALID_DATE(511)
 }
 
 enum class Gender{
