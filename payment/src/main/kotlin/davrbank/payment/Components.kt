@@ -1,9 +1,6 @@
 package davrbank.payment
 
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import feign.Response
-import feign.codec.ErrorDecoder
 import lombok.extern.slf4j.Slf4j
 import org.apache.commons.logging.LogFactory
 import org.slf4j.Logger

@@ -3,7 +3,6 @@ package davrbank.security
 import com.fasterxml.jackson.annotation.JsonInclude
 import org.hibernate.validator.constraints.Length
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import javax.validation.constraints.NotBlank
