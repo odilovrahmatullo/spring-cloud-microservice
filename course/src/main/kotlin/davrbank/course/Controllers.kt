@@ -1,11 +1,40 @@
 package davrbank.course
 
+import org.springframework.context.support.ResourceBundleMessageSource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.ExceptionHandler
 import javax.validation.Valid
 
+@ControllerAdvice
+class ExceptionHandlers(
+    private val errorMessageSource: ResourceBundleMessageSource
+) {
+    @ExceptionHandler(CourseServiceException::class)
+    fun handleException(exception: CourseServiceException): ResponseEntity<*> {
+        return when (exception) {
+            is FeignErrorException -> ResponseEntity.badRequest().body(
+                BaseMessage(exception.code, exception.errorMessage))
+
+            is GeneralApiException -> ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource, exception.msg)
+            )
+
+            is CourseNameAlreadyExistException ->  ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
+            is CourseNotFoundException ->  ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
+            is CourseNotFoundExceptionInList ->  ResponseEntity.badRequest().body(
+                exception.getErrorMessage(errorMessageSource)
+            )
+        }
+    }
+}
 
 @RestController
 class CourseController(private val courseService: CourseService) {

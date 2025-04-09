@@ -1,8 +1,10 @@
 package davrbank.payment
 
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import feign.Response
+import feign.codec.ErrorDecoder
 import lombok.extern.slf4j.Slf4j
-import org.apache.commons.logging.LogFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
@@ -15,9 +17,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.stereotype.Component
-import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.LocaleResolver
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 import java.util.*
@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-/*
 @Component
 class FeignErrorDecoder : ErrorDecoder {
     val mapper = ObjectMapper()
@@ -37,7 +36,6 @@ class FeignErrorDecoder : ErrorDecoder {
         return GeneralApiException("Not handled")
     }
 }
-*/
 
 @Configuration
 class WebMvcConfig : WebMvcConfigurer {
@@ -47,13 +45,6 @@ class WebMvcConfig : WebMvcConfigurer {
         val localeResolver = AcceptHeaderLocaleResolver()
         localeResolver.defaultLocale = Locale("uz")
         return localeResolver
-    }
-
-    @Bean
-    fun localeChangeInterceptor() = HeaderLocaleChangeInterceptor("hl")
-
-    override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(localeChangeInterceptor())//Betda yozgan interceptorimizani register qp qoyvommiza
     }
 
     @Bean
@@ -95,25 +86,6 @@ class CustomAccessDeniedHandler(
     }
 }
 
-
-class HeaderLocaleChangeInterceptor(val headerName: String) : HandlerInterceptor {
-    private val logger = LogFactory.getLog(javaClass)
-
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val newLocale = request.getHeader(headerName)
-        if (newLocale != null) {
-            try {
-                LocaleContextHolder.setLocale(Locale(newLocale))
-            } catch (ex: IllegalArgumentException) {
-                logger.info("Ignoring invalid locale value [" + newLocale + "]: " + ex.message)
-            }
-        } else {
-            LocaleContextHolder.setLocale(Locale("uz"))
-        }
-        return true
-    }
-}
-
 @Component
 @Slf4j
 class SecurityUtil(private val jwtTokenUtil: JwtTokenUtil) {
@@ -143,17 +115,6 @@ class SecurityUtil(private val jwtTokenUtil: JwtTokenUtil) {
             log.error("Tokenni dekodlashda xatolik: ${e.message}", e)
             null
         }
-    }
-
-    fun getCurrentUsername(): String? {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val username = authentication?.name
-        if (username != null) {
-            log.info("Foydalanuvchi nomi: $username")
-        } else {
-            log.warn("Foydalanuvchi nomi olinmadi.")
-        }
-        return username
     }
 }
 

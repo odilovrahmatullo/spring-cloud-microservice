@@ -10,7 +10,9 @@ import org.springframework.validation.BindException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.HashMap
 
 
 @ControllerAdvice
@@ -28,12 +30,6 @@ class ExceptionHandler(
             val message = BaseMessage(400, "So‘rov noto‘g‘ri tuzilgan")
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message)
         }
-    }
-
-
-    @ExceptionHandler(PaymentServiceException::class)
-    fun handleShoppingException(exception: PaymentServiceException): ResponseEntity<BaseMessage> {
-        return ResponseEntity.badRequest().body(exception.getErrorMessage(errorMessageSource))
     }
 
     @ExceptionHandler(BindException::class)
@@ -104,13 +100,13 @@ class ExceptionHandler(
 
 sealed class PaymentServiceException(message: String? = null) : RuntimeException(message) {
     abstract fun errorType(): ErrorCode
-    protected open fun getErrorMessageArguments(): Array<Any?>? = null
-    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource): BaseMessage {
+
+    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource, vararg array: Any?): BaseMessage {
         return BaseMessage(
             errorType().code,
             errorMessageSource.getMessage(
                 errorType().toString(),
-                getErrorMessageArguments(),
+                array,
                 LocaleContextHolder.getLocale()
             )
         )

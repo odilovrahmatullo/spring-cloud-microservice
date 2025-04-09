@@ -81,13 +81,13 @@ class ExceptionHandler(
 
 sealed class CourseServiceException(message: String? = null) : RuntimeException(message) {
     abstract fun errorType(): ErrorCode
-    protected open fun getErrorMessageArguments(): Array<Any?>? = null
-    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource): BaseMessage {
+
+    fun getErrorMessage(errorMessageSource: ResourceBundleMessageSource, vararg array: Any?): BaseMessage {
         return BaseMessage(
             errorType().code,
             errorMessageSource.getMessage(
                 errorType().toString(),
-                getErrorMessageArguments(),
+                array,
                 LocaleContextHolder.getLocale()
             )
         )
@@ -108,5 +108,13 @@ class CourseNotFoundException : CourseServiceException() {
 
 class CourseNotFoundExceptionInList : CourseServiceException() {
     override fun errorType() = ErrorCode.COURSE_NOT_FOUND_IN_LIST
+}
+
+class GeneralApiException(val msg: String) : CourseServiceException() {
+    override fun errorType(): ErrorCode = ErrorCode.GENERAL_API_EXCEPTION
+}
+
+class FeignErrorException(val code: Int?, val errorMessage: String?) : CourseServiceException() {
+    override fun errorType() = ErrorCode.GENERAL_API_EXCEPTION
 }
 

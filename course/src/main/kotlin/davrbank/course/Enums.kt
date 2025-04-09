@@ -6,4 +6,5 @@ enum class ErrorCode(val code: Int) {
     COURSE_NAME_ALREADY_EXIST(201),
     VALIDATION_ERROR(202),
     COURSE_NOT_FOUND_IN_LIST(203),
+    GENERAL_API_EXCEPTION(204)
 }
